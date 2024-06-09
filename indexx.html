@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="color-scheme" content="dark">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <body style="color: rgb(4, 255, 0);"></body>
+    <title>Nmap Scanner</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+    <style>
+        .imput{
+            border-color: rgb(4, 255, 0);
+        }
+        .submit{
+            border-color: rgb(4, 255, 0);
+            color: rgb(4, 255, 0);
+            border-radius: 4px;
+            height: 36px;
+            width: 150px;
+            background-color: rgb(0,0,0);
+            border-style: solid;
+            margin-right: 8px;
+            transition: background-color 0.7s, color 0.7s;
+        }
+        .submit:hover{
+            background-color: rgb(4, 255, 0);
+            color: black;
+        }
+        .submit:active{
+            opacity: 0.7;
+        }
+    </style>  
+<body>
+    <h1>Nmap Scanner</h1>
+    <form id="scan-form">
+        <label class='imput' for="host">Host IP Address:</label>
+        <input class='imput' type="text" id="host" name="host" required><br><br>
+        <label class='imput' for="ports">Port Range (e.g., 1-1024):</label>
+        <input class='imput' type="text" id="ports" name="ports" required><br><br>
+        <button class='submit' type="button" onclick="scanPorts()">Start Scanning (TCP)</button>
+        <button class='submit' type="button" onclick="scanUDPPorts()">Start Scanning (UDP)</button>
+        <button class='submit' type="button" onclick="clearFields()">Clear</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        function scanPorts() {
+            var host = document.getElementById("host").value;
+            var ports = document.getElementById("ports").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/scan", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById("results").innerText = JSON.stringify(response, null, 4);
+                } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                    document.getElementById("results").innerText = "Unsupported: " + xhr.statusText;
+                }
+            };
+
+            var data = JSON.stringify({ "host": host, "ports": ports, "scan_type": "TCP" });
+            xhr.send(data);
+        }
+
+        function scanUDPPorts() {
+            var host = document.getElementById("host").value;
+            var ports = document.getElementById("ports").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/scan", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById("results").innerText = JSON.stringify(response, null, 4);
+                } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                    document.getElementById("results").innerText = "Unsupported: " + xhr.statusText;
+                }
+            };
+
+            var data = JSON.stringify({ "host": host, "ports": ports, "scan_type": "UDP" });
+            xhr.send(data);
+        }
+
+        function clearFields() {
+            document.getElementById("host").value = "";
+            document.getElementById("ports").value = "";
+            document.getElementById("results").innerText = "";
+        }
+    </script>
+</body>
+</html>
